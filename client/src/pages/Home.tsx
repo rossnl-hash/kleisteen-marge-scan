@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Clock, CheckCircle, FileText, Building2, Anchor, Wrench, Star, ChevronRight, Phone, Shield, Euro, Settings, ScanLine, Landmark, Send, User, Briefcase, MessageSquare } from "lucide-react";
+import { Clock, CheckCircle, FileText, Building2, Anchor, Wrench, Star, ChevronRight, Phone, Mail, Shield, Euro, Settings, ScanLine, Landmark, Send, User, Briefcase, MessageSquare } from "lucide-react";
 
 // Kleisteen huisstijl kleuren
 // Primair: #1565C0 (kobaltblauw)
@@ -344,7 +344,7 @@ export default function Home() {
                 <Phone size={20} style={{ color: "#1565C0" }} />
                 <div>
                   <p className="text-xs text-gray-500">Liever direct bellen?</p>
-                  <a href="tel:+31553680000" className="font-bold text-gray-900 hover:underline">055 - 368 0000</a>
+                  <a href="tel:+31208932392" className="font-bold text-gray-900 hover:underline">020 - 89 32 392</a>
                 </div>
               </div>
             </div>
@@ -508,20 +508,51 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ backgroundColor: "#1565C0" }} className="py-8">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div style={{ backgroundColor: "#1A1A1A" }} className="px-3 py-1.5 rounded-sm">
-              <span className="text-white font-black text-sm tracking-wider uppercase">KLEISTEEN</span>
+      <footer style={{ backgroundColor: "#1565C0" }} className="py-10">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            {/* Logo + omschrijving */}
+            <div className="md:col-span-2">
+              <div style={{ backgroundColor: "#1A1A1A" }} className="inline-block px-3 py-1.5 rounded-sm mb-3">
+                <span className="text-white font-black text-sm tracking-wider uppercase">KLEISTEEN</span>
+              </div>
+              <p className="text-blue-200 text-sm leading-relaxed mb-2">100% Nederlandse boekhoud- en ERP-software voor ondernemers die grip willen op hun projecten, uren en marge.</p>
+              <p className="text-blue-300 text-xs">KvK: 30157353</p>
             </div>
-            <span className="text-blue-200 text-sm">Kleisteen Software B.V.</span>
+            {/* Adres */}
+            <div>
+              <h4 className="text-white font-bold text-sm mb-3">Adres</h4>
+              <address className="not-italic text-blue-200 text-sm leading-relaxed">
+                Johan van Hasseltweg 2 b2<br />
+                1022 WV Amsterdam<br />
+                Nederland
+              </address>
+            </div>
+            {/* Contact */}
+            <div>
+              <h4 className="text-white font-bold text-sm mb-3">Contact</h4>
+              <div className="space-y-2 text-sm">
+                <a href="tel:+31208932392" className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors">
+                  <Phone size={13} /> 020 - 89 32 392
+                </a>
+                <a href="mailto:info@kleisteen.nl" className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors">
+                  <Mail size={13} /> info@kleisteen.nl
+                </a>
+                <a href="https://kleisteen.nl" className="flex items-center gap-2 text-blue-200 hover:text-white transition-colors">
+                  kleisteen.nl
+                </a>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-6 text-blue-200 text-sm">
-            <a href="https://kleisteen.nl" className="hover:text-white transition-colors">kleisteen.nl</a>
-            <a href="https://kleisteen.nl/contact" className="hover:text-white transition-colors">Contact</a>
-            <a href="https://kleisteen.nl/helpdesk" className="hover:text-white transition-colors">Helpdesk</a>
+          <div className="border-t border-blue-400 border-opacity-30 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
+            <div className="flex gap-6 text-blue-200 text-sm">
+              <a href="https://kleisteen.nl" className="hover:text-white transition-colors">Home</a>
+              <a href="https://kleisteen.nl/functies" className="hover:text-white transition-colors">Functies</a>
+              <a href="https://kleisteen.nl/tarieven" className="hover:text-white transition-colors">Tarieven</a>
+              <a href="https://kleisteen.nl/helpdesk" className="hover:text-white transition-colors">Helpdesk</a>
+            </div>
+            <p className="text-blue-300 text-xs">© 2026 Kleisteen Software B.V. · Alle rechten voorbehouden.</p>
           </div>
-          <p className="text-blue-300 text-xs">© 2026 Kleisteen. Alle rechten voorbehouden.</p>
         </div>
       </footer>
 
