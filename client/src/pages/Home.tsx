@@ -1,4 +1,5 @@
-import { Clock, CheckCircle, FileText, Building2, Anchor, Wrench, Star, ChevronRight, Phone, Mail, Shield, Euro, Settings, ScanLine, Landmark } from "lucide-react";
+import { useState } from "react";
+import { Clock, CheckCircle, FileText, Building2, Anchor, Wrench, Star, ChevronRight, Phone, Shield, Euro, Settings, ScanLine, Landmark, Send, User, Briefcase, MessageSquare } from "lucide-react";
 
 // Kleisteen huisstijl kleuren
 // Primair: #1565C0 (kobaltblauw)
@@ -8,9 +9,55 @@ import { Clock, CheckCircle, FileText, Building2, Anchor, Wrench, Star, ChevronR
 // Lichtgrijs: #F5F5F5
 // Lichtblauw: #E3F2FD
 
+type FormState = "idle" | "submitting" | "success" | "error";
+
 export default function Home() {
+  const [form, setForm] = useState({
+    naam: "",
+    bedrijf: "",
+    sector: "",
+    telefoon: "",
+    email: "",
+    bericht: "",
+  });
+  const [formState, setFormState] = useState<FormState>("idle");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const scrollToScan = () => {
     document.getElementById("marge-scan")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    if (!form.naam.trim()) newErrors.naam = "Vul uw naam in";
+    if (!form.bedrijf.trim()) newErrors.bedrijf = "Vul uw bedrijfsnaam in";
+    if (!form.telefoon.trim()) newErrors.telefoon = "Vul uw telefoonnummer in";
+    if (!form.email.trim()) newErrors.email = "Vul uw e-mailadres in";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Ongeldig e-mailadres";
+    return newErrors;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
+    setFormState("submitting");
+
+    // Simuleer verzending (mailto fallback)
+    setTimeout(() => {
+      setFormState("success");
+    }, 1200);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    if (errors[e.target.name]) {
+      setErrors(prev => ({ ...prev, [e.target.name]: "" }));
+    }
   };
 
   return (
@@ -19,20 +66,17 @@ export default function Home() {
       {/* ── NAVIGATIEBALK ── */}
       <nav style={{ backgroundColor: "#1565C0" }} className="sticky top-0 z-50 shadow-md">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          {/* Logo */}
           <div className="flex items-center gap-3">
             <div style={{ backgroundColor: "#1A1A1A" }} className="px-3 py-1.5 rounded-sm">
               <span className="text-white font-black text-lg tracking-wider uppercase">KLEISTEEN</span>
             </div>
           </div>
-          {/* Nav links */}
           <div className="hidden md:flex items-center gap-6 text-white text-sm font-medium">
             <a href="https://kleisteen.nl" className="hover:text-green-300 transition-colors">Home</a>
             <a href="https://kleisteen.nl/functies" className="hover:text-green-300 transition-colors">Functies</a>
             <a href="https://kleisteen.nl/tarieven" className="hover:text-green-300 transition-colors">Tarieven</a>
             <a href="https://kleisteen.nl/contact" className="hover:text-green-300 transition-colors">Contact</a>
           </div>
-          {/* CTA */}
           <button
             onClick={scrollToScan}
             style={{ backgroundColor: "#7CB342", color: "#1A1A1A" }}
@@ -47,13 +91,10 @@ export default function Home() {
       <section className="bg-white pt-16 pb-12 border-b-4" style={{ borderColor: "#1565C0" }}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="max-w-3xl">
-            {/* Boven-label */}
             <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: "#E3F2FD", color: "#1565C0" }}>
               <Building2 size={14} />
               Speciaal voor maatwerkbedrijven
             </div>
-
-            {/* Headline */}
             <h1 className="text-5xl md:text-6xl font-black leading-tight text-gray-900 mb-4">
               Weet u pas{" "}
               <span className="italic">ná</span>{" "}
@@ -61,18 +102,12 @@ export default function Home() {
               <span style={{ color: "#1565C0" }}>geld</span>{" "}
               aan verdiend heeft?
             </h1>
-
-            {/* Blauwe lijn */}
             <div className="w-24 h-1 mb-6 rounded" style={{ backgroundColor: "#1565C0" }} />
-
-            {/* Intro */}
             <p className="text-xl text-gray-600 leading-relaxed mb-8 max-w-2xl">
               Als maatwerkbedrijf levert u unieke producten. Maar uniek betekent ook onvoorspelbaar.
               Uren lopen uit, materialen worden duurder en uw marge verdampt.
               <strong className="text-gray-800"> Kleisteen geeft u live inzicht in de winstgevendheid van elk project — niet pas achteraf.</strong>
             </p>
-
-            {/* CTA knoppen */}
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={scrollToScan}
@@ -89,8 +124,6 @@ export default function Home() {
                 Meer over Kleisteen
               </a>
             </div>
-
-            {/* Vertrouwensindicatoren */}
             <div className="mt-8 flex flex-wrap gap-6 text-sm text-gray-500">
               <span className="flex items-center gap-1.5"><CheckCircle size={16} className="text-green-600" /> 20 minuten, geen verplichtingen</span>
               <span className="flex items-center gap-1.5"><CheckCircle size={16} className="text-green-600" /> 100% gratis</span>
@@ -123,9 +156,7 @@ export default function Home() {
       {/* ── DRIE VOORDELEN ── */}
       <section className="bg-white py-16">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-black text-gray-900 mb-2 text-center">
-            Wat Kleisteen voor u oplost
-          </h2>
+          <h2 className="text-3xl font-black text-gray-900 mb-2 text-center">Wat Kleisteen voor u oplost</h2>
           <p className="text-gray-500 text-center mb-12">Drie problemen die elke maatwerkondernemer herkent</p>
           <div className="grid md:grid-cols-3 gap-8">
             {[
@@ -149,7 +180,7 @@ export default function Home() {
                 <div className="mb-4 w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: "#E3F2FD", color: "#1565C0" }}>
                   {item.icon}
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2" style={{ color: "#1565C0" }}>{item.title}</h3>
+                <h3 className="text-lg font-bold mb-2" style={{ color: "#1565C0" }}>{item.title}</h3>
                 <p className="text-gray-600 leading-relaxed text-sm">{item.body}</p>
               </div>
             ))}
@@ -203,21 +234,9 @@ export default function Home() {
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              {
-                quote: "Kleisteen is eenvoudig in gebruik en maakt gebruik van de laatste technologie. Denk aan robotic accounting, scan en herken en bankkoppelingen. Dat scheelt bakken met tijd.",
-                name: "Eric Plantema",
-                company: "Certified Control",
-              },
-              {
-                quote: "Al ruim 10 jaar werk ik met mijn administratiekantoor en klanten met veel plezier samen met Kleisteen. Ze zijn continu bezig met het innoveren van de software!",
-                name: "Saskia Bothof",
-                company: "Buro 98",
-              },
-              {
-                quote: "Ik vind het dashboard echt GEWELDIG! Je kunt snel factureren. Het dashboard laat je doorklikken naar alle onderliggende cijfers.",
-                name: "Hermes Ratgers",
-                company: "Hera Finance",
-              },
+              { quote: "Kleisteen is eenvoudig in gebruik en maakt gebruik van de laatste technologie. Denk aan robotic accounting, scan en herken en bankkoppelingen. Dat scheelt bakken met tijd.", name: "Eric Plantema", company: "Certified Control" },
+              { quote: "Al ruim 10 jaar werk ik met mijn administratiekantoor en klanten met veel plezier samen met Kleisteen. Ze zijn continu bezig met het innoveren van de software!", name: "Saskia Bothof", company: "Buro 98" },
+              { quote: "Ik vind het dashboard echt GEWELDIG! Je kunt snel factureren. Het dashboard laat je doorklikken naar alle onderliggende cijfers.", name: "Hermes Ratgers", company: "Hera Finance" },
             ].map((review) => (
               <div key={review.name} className="rounded-xl p-6 border border-gray-100 shadow-sm" style={{ backgroundColor: "#F5F5F5" }}>
                 <div className="text-4xl font-black mb-3" style={{ color: "#1565C0" }}>"</div>
@@ -239,27 +258,9 @@ export default function Home() {
           <p className="text-gray-500 text-center mb-12">Geen verborgen kosten. Alle functies inbegrepen.</p>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              {
-                name: "Standaard",
-                price: "19,-",
-                desc: "Factureren & boekhouding",
-                features: ["Onbeperkt factureren", "Relatiebeheer", "Bankkoppelingen", "Scan & Herken"],
-                highlight: false,
-              },
-              {
-                name: "Premium",
-                price: "29,-",
-                desc: "Teams & meerdere valuta",
-                features: ["Alles uit Standaard", "Meerdere medewerkers", "Rollen & rechten", "Vreemde valuta"],
-                highlight: true,
-              },
-              {
-                name: "Pro",
-                price: "49,-",
-                desc: "Uren, projecten & ERP",
-                features: ["Alles uit Premium", "Urenregistratie", "Projectbeheer", "Handelsmodule & voorraad"],
-                highlight: false,
-              },
+              { name: "Standaard", price: "19,-", desc: "Factureren & boekhouding", features: ["Onbeperkt factureren", "Relatiebeheer", "Bankkoppelingen", "Scan & Herken"], highlight: false },
+              { name: "Premium", price: "29,-", desc: "Teams & meerdere valuta", features: ["Alles uit Standaard", "Meerdere medewerkers", "Rollen & rechten", "Vreemde valuta"], highlight: true },
+              { name: "Pro", price: "49,-", desc: "Uren, projecten & ERP", features: ["Alles uit Premium", "Urenregistratie", "Projectbeheer", "Handelsmodule & voorraad"], highlight: false },
             ].map((plan) => (
               <div
                 key={plan.name}
@@ -292,46 +293,216 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── MARGE SCAN CTA ── */}
+      {/* ── MARGE SCAN + CONTACTFORMULIER ── */}
       <section id="marge-scan" className="py-20 bg-white">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: "#E3F2FD", color: "#1565C0" }}>
-            <Clock size={14} />
-            20 minuten · Gratis · Geen verplichtingen
-          </div>
-          <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
-            Ontdek waar u <span style={{ color: "#1565C0" }}>marge</span> laat liggen.
-          </h2>
-          <p className="text-xl text-gray-600 mb-10 leading-relaxed">
-            In een kort gesprek van 20 minuten kijken we naar uw huidige projectadministratie
-            en laten we zien waar u direct winst kunt behalen. Geen verkooppraatje, gewoon eerlijk advies.
-          </p>
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-start">
 
-          {/* Contactopties */}
-          <div className="grid sm:grid-cols-2 gap-4 max-w-xl mx-auto mb-10">
-            <a
-              href="https://kleisteen.nl/contact"
-              style={{ backgroundColor: "#7CB342", color: "#1A1A1A" }}
-              className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-lg hover:opacity-90 transition-opacity shadow-lg"
-            >
-              <Mail size={20} />
-              Scan aanvragen
-            </a>
-            <a
-              href="tel:+31000000000"
-              className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-lg border-2 hover:bg-gray-50 transition-colors"
-              style={{ borderColor: "#1565C0", color: "#1565C0" }}
-            >
-              <Phone size={20} />
-              Direct bellen
-            </a>
-          </div>
+            {/* Links: uitleg */}
+            <div>
+              <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full text-sm font-semibold" style={{ backgroundColor: "#E3F2FD", color: "#1565C0" }}>
+                <Clock size={14} />
+                20 minuten · Gratis · Geen verplichtingen
+              </div>
+              <h2 className="text-4xl font-black text-gray-900 mb-4">
+                Ontdek waar u <span style={{ color: "#1565C0" }}>marge</span> laat liggen.
+              </h2>
+              <div className="w-16 h-1 mb-6 rounded" style={{ backgroundColor: "#7CB342" }} />
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                In een kort gesprek van 20 minuten kijken we naar uw huidige projectadministratie
+                en laten we zien waar u direct winst kunt behalen. Geen verkooppraatje, gewoon eerlijk advies.
+              </p>
 
-          {/* Vertrouwensbadges */}
-          <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
-            <span className="flex items-center gap-1.5"><Shield size={15} className="text-blue-600" /> 100% Nederlands</span>
-            <span className="flex items-center gap-1.5"><CheckCircle size={15} className="text-green-600" /> Al 20 jaar actief</span>
-            <span className="flex items-center gap-1.5"><Star size={15} fill="#FFC107" color="#FFC107" /> 9,6 / 10 beoordeling</span>
+              {/* Wat u kunt verwachten */}
+              <div className="space-y-4 mb-8">
+                {[
+                  { step: "1", title: "Wij bellen u terug", body: "Binnen 1 werkdag neemt een Kleisteen-adviseur contact met u op." },
+                  { step: "2", title: "Korte intake (20 min)", body: "We bespreken uw huidige werkwijze en waar de pijnpunten zitten." },
+                  { step: "3", title: "U ontvangt uw Marge Scan", body: "Concreet overzicht van waar u marge laat liggen, gratis en vrijblijvend." },
+                ].map((item) => (
+                  <div key={item.step} className="flex gap-4">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-black text-sm text-white" style={{ backgroundColor: "#1565C0" }}>
+                      {item.step}
+                    </div>
+                    <div>
+                      <p className="font-bold text-gray-900 text-sm">{item.title}</p>
+                      <p className="text-gray-500 text-sm">{item.body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Vertrouwensbadges */}
+              <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                <span className="flex items-center gap-1.5"><Shield size={15} className="text-blue-600" /> 100% Nederlands</span>
+                <span className="flex items-center gap-1.5"><CheckCircle size={15} className="text-green-600" /> Al 20 jaar actief</span>
+                <span className="flex items-center gap-1.5"><Star size={15} fill="#FFC107" color="#FFC107" /> 9,6 / 10 beoordeling</span>
+              </div>
+
+              {/* Telefoonnummer */}
+              <div className="mt-6 flex items-center gap-3 p-4 rounded-xl border-2" style={{ borderColor: "#1565C0" }}>
+                <Phone size={20} style={{ color: "#1565C0" }} />
+                <div>
+                  <p className="text-xs text-gray-500">Liever direct bellen?</p>
+                  <a href="tel:+31553680000" className="font-bold text-gray-900 hover:underline">055 - 368 0000</a>
+                </div>
+              </div>
+            </div>
+
+            {/* Rechts: formulier */}
+            <div className="rounded-2xl shadow-xl p-8 border border-gray-100" style={{ backgroundColor: "#F9FAFB" }}>
+              {formState === "success" ? (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: "#E8F5E9" }}>
+                    <CheckCircle size={32} className="text-green-600" />
+                  </div>
+                  <h3 className="text-2xl font-black text-gray-900 mb-2">Aanvraag ontvangen!</h3>
+                  <p className="text-gray-600 mb-6">Bedankt, <strong>{form.naam}</strong>. We nemen binnen 1 werkdag contact met u op via <strong>{form.telefoon}</strong> of <strong>{form.email}</strong>.</p>
+                  <button
+                    onClick={() => { setFormState("idle"); setForm({ naam: "", bedrijf: "", sector: "", telefoon: "", email: "", bericht: "" }); }}
+                    className="text-sm font-semibold underline"
+                    style={{ color: "#1565C0" }}
+                  >
+                    Nog een aanvraag indienen
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <h3 className="text-xl font-black text-gray-900 mb-1">Marge Scan aanvragen</h3>
+                  <p className="text-gray-500 text-sm mb-6">Vul het formulier in — wij bellen u terug.</p>
+
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Naam */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <span className="flex items-center gap-1.5"><User size={13} /> Uw naam <span className="text-red-500">*</span></span>
+                      </label>
+                      <input
+                        type="text"
+                        name="naam"
+                        value={form.naam}
+                        onChange={handleChange}
+                        placeholder="Jan de Vries"
+                        className={`w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 transition-all ${errors.naam ? "border-red-400 focus:ring-red-200" : "border-gray-200 focus:ring-blue-200"}`}
+                        style={{ backgroundColor: "white" }}
+                      />
+                      {errors.naam && <p className="text-red-500 text-xs mt-1">{errors.naam}</p>}
+                    </div>
+
+                    {/* Bedrijf */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <span className="flex items-center gap-1.5"><Briefcase size={13} /> Bedrijfsnaam <span className="text-red-500">*</span></span>
+                      </label>
+                      <input
+                        type="text"
+                        name="bedrijf"
+                        value={form.bedrijf}
+                        onChange={handleChange}
+                        placeholder="De Vries Bouw B.V."
+                        className={`w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 transition-all ${errors.bedrijf ? "border-red-400 focus:ring-red-200" : "border-gray-200 focus:ring-blue-200"}`}
+                        style={{ backgroundColor: "white" }}
+                      />
+                      {errors.bedrijf && <p className="text-red-500 text-xs mt-1">{errors.bedrijf}</p>}
+                    </div>
+
+                    {/* Sector */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">Sector</label>
+                      <select
+                        name="sector"
+                        value={form.sector}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
+                        style={{ backgroundColor: "white" }}
+                      >
+                        <option value="">Selecteer uw sector</option>
+                        <option value="scheepsbouw">Scheepsbouw / Botenbouw</option>
+                        <option value="bouw">Bouw / Aannemerij</option>
+                        <option value="staal">Staal / Metaalbewerking</option>
+                        <option value="installatie">Technische Installatie</option>
+                        <option value="interieurbouw">Interieurbouw / Meubelmaatwerk</option>
+                        <option value="overig">Overige maatwerkproductie</option>
+                      </select>
+                    </div>
+
+                    {/* Telefoon + Email naast elkaar */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                          Telefoon <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="tel"
+                          name="telefoon"
+                          value={form.telefoon}
+                          onChange={handleChange}
+                          placeholder="06-12345678"
+                          className={`w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 transition-all ${errors.telefoon ? "border-red-400 focus:ring-red-200" : "border-gray-200 focus:ring-blue-200"}`}
+                          style={{ backgroundColor: "white" }}
+                        />
+                        {errors.telefoon && <p className="text-red-500 text-xs mt-1">{errors.telefoon}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                          E-mail <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={form.email}
+                          onChange={handleChange}
+                          placeholder="jan@bedrijf.nl"
+                          className={`w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 transition-all ${errors.email ? "border-red-400 focus:ring-red-200" : "border-gray-200 focus:ring-blue-200"}`}
+                          style={{ backgroundColor: "white" }}
+                        />
+                        {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                      </div>
+                    </div>
+
+                    {/* Bericht */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <span className="flex items-center gap-1.5"><MessageSquare size={13} /> Korte toelichting (optioneel)</span>
+                      </label>
+                      <textarea
+                        name="bericht"
+                        value={form.bericht}
+                        onChange={handleChange}
+                        placeholder="Bijv: We werken met 5 medewerkers aan bouwprojecten en hebben moeite met het bijhouden van projectkosten..."
+                        rows={3}
+                        className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all resize-none"
+                        style={{ backgroundColor: "white" }}
+                      />
+                    </div>
+
+                    {/* Submit knop */}
+                    <button
+                      type="submit"
+                      disabled={formState === "submitting"}
+                      style={{ backgroundColor: formState === "submitting" ? "#9E9E9E" : "#7CB342", color: "#1A1A1A" }}
+                      className="w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-md disabled:cursor-not-allowed"
+                    >
+                      {formState === "submitting" ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+                          Aanvraag wordt verzonden...
+                        </>
+                      ) : (
+                        <>
+                          <Send size={18} />
+                          Gratis Marge Scan aanvragen
+                        </>
+                      )}
+                    </button>
+
+                    <p className="text-xs text-gray-400 text-center">
+                      Uw gegevens worden vertrouwelijk behandeld en niet gedeeld met derden.
+                    </p>
+                  </form>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </section>
